@@ -55,13 +55,22 @@ public class OtpService {
                 throw new RuntimeException("Not a valid singapore phone number.");
             }
 
-            if (savedRecords.get(0).getOtpRequestedTime().plusMinutes(5).isBefore(otpEntity.getOtpRequestedTime())) {
+            if (savedRecords.get(0).getOtpRequestedTime().plusMinutes(5).isBefore(otpEntity.getOtpRequestedTime()) // saved + 5 < query
+                            || savedRecords.get(0).getOtpRequestedTime().isAfter(otpEntity.getOtpRequestedTime())) { // saved > query
                 throw new RuntimeException("OTP expired. Please request your otp 1 more time");
+            }
+
+            if (otpEntity.getOtpCode() != savedRecords.get(0).getOtpCode()) {
+                throw new RuntimeException("Invalid OTP.");
             }
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public List<OTPEntity> findAll() {
+        return otpRepository.findAll();
     }
 
     private static int generateOtp() {
@@ -81,8 +90,4 @@ public class OtpService {
     private static boolean isSingaporePhoneNumber (String phoneNumber) {
         return phoneNumber.matches("\\+65[6|8|9]\\d{7}");
     }
-
-
-
-
 }

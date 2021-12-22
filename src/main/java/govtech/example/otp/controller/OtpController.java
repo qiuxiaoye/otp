@@ -8,13 +8,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class OtpController {
 
     @Autowired
     OtpService otpService;
 
-    @GetMapping("/users/{phoneNumber}")
+    @GetMapping("/otp/{phoneNumber}")
     public ResponseEntity<ResponseMessage> getOtpByPhoneNumber(@PathVariable("phoneNumber") String phoneNumber) {
         try {
             int otp = otpService.getOtpByPhoneNumber(phoneNumber);
@@ -25,7 +27,7 @@ public class OtpController {
         }
     }
 
-    @PostMapping("/users")
+    @PostMapping("/otp")
     public ResponseEntity<ResponseMessage> validateSmsOtp(@RequestBody OTPEntity otpEntity) {
         try {
             otpService.validateSmsOtp(otpEntity);
@@ -35,5 +37,15 @@ public class OtpController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage(e.getMessage()));
         }
     }
+
+    @GetMapping("/otp")
+    public ResponseEntity<List<OTPEntity>> getAllOtps() {
+        try {
+            return new ResponseEntity<>(otpService.findAll(), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 }
